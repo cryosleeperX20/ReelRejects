@@ -245,7 +245,7 @@ month_hit_rates = {
 # header
 col_logo, col_title = st.columns([1, 5])
 with col_logo:
-    st.markdown("<div style='padding-top:0.5rem; font-size:3rem'>🎟️</div>", unsafe_allow_html=True)
+    st.markdown("<div style='padding-top:0.3rem; font-size:6rem; line-height:1'>🎟️</div>", unsafe_allow_html=True)
 with col_title:
     st.markdown("<div class='hero-title'>REEL<span class='red-accent'>REJECTS</span></div>", unsafe_allow_html=True)
     st.markdown("<div class='hero-sub'>Movie Hit or Flop Predictor — ML Powered</div>", unsafe_allow_html=True)
@@ -271,41 +271,58 @@ left_col, right_col = st.columns([2, 1.5], gap="large")
 with left_col:
     st.markdown("<div class='section-title'>— Movie Details</div>", unsafe_allow_html=True)
 
+    movie_name = st.text_input("Movie Name", placeholder="e.g. Inception, Avengers...")
+
     c1, c2 = st.columns(2)
     with c1:
-        budget = st.number_input("Budget ($)", min_value=10000, max_value=500000000,
-                                  value=50000000, step=1000000,
-                                  help="Production budget in USD")
+        genre = st.selectbox("Primary Genre", options=sorted(list(le.classes_)))
     with c2:
-        revenue_estimate = st.number_input("Expected Revenue ($)", min_value=0,
-                                            max_value=2000000000, value=0, step=1000000,
-                                            help="Leave 0 if unknown")
+        budget = st.number_input("Budget ($)", min_value=10000, max_value=500000000,
+                                  value=50000000, step=1000000)
 
     c3, c4 = st.columns(2)
     with c3:
-        genre = st.selectbox("Primary Genre", options=sorted(list(le.classes_)))
-    with c4:
-        runtime = st.slider("Runtime (mins)", min_value=60, max_value=240, value=110)
-
-    c5, c6 = st.columns(2)
-    with c5:
         release_month = st.selectbox("Release Month",
                                       options=list(month_names.keys()),
                                       format_func=lambda x: month_names[x],
                                       index=5)
-    with c6:
+    with c4:
         release_year = st.slider("Release Year", min_value=2020, max_value=2030, value=2025)
 
-    c7, c8 = st.columns(2)
-    with c7:
-        vote_average = st.slider("Expected Rating (1-10)", min_value=1.0,
-                                  max_value=10.0, value=6.5, step=0.1)
-    with c8:
-        popularity = st.slider("Popularity Score", min_value=0.0,
-                                max_value=100.0, value=20.0, step=0.5)
+    # genre-based smart defaults -- avg values from training data
+    genre_defaults = {
+        'Action': (120, 25.0, 6.2, 3000),
+        'Adventure': (115, 22.0, 6.4, 2800),
+        'Animation': (95, 18.0, 6.8, 2000),
+        'Comedy': (100, 15.0, 6.1, 2500),
+        'Crime': (118, 14.0, 6.5, 2200),
+        'Documentary': (90, 8.0, 7.0, 800),
+        'Drama': (110, 12.0, 6.6, 2000),
+        'Family': (100, 20.0, 6.3, 1800),
+        'Fantasy': (118, 24.0, 6.5, 2600),
+        'History': (130, 10.0, 6.7, 1200),
+        'Horror': (95, 18.0, 5.8, 3500),
+        'Music': (105, 12.0, 6.9, 1000),
+        'Mystery': (105, 13.0, 6.4, 1800),
+        'Romance': (105, 11.0, 6.3, 1500),
+        'Science Fiction': (115, 28.0, 6.3, 2800),
+        'Thriller': (110, 16.0, 6.2, 2400),
+        'War': (130, 12.0, 6.8, 1400),
+        'Western': (115, 9.0, 6.5, 1000),
+    }
 
-    vote_count = st.slider("Expected Vote Count", min_value=0,
-                            max_value=50000, value=1000, step=100)
+    # grab defaults for selected genre, fall back to average if genre missing
+    d_runtime, d_pop, d_rating, d_votes = genre_defaults.get(genre, (110, 15.0, 6.5, 2000))
+
+    with st.expander("⚙️ Advanced Settings (optional)"):
+        st.markdown("<div style='color:#666; font-size:0.75rem; margin-bottom:1rem'>Pre-filled with genre averages. Tweak if you know better.</div>", unsafe_allow_html=True)
+        c5, c6 = st.columns(2)
+        with c5:
+            runtime = st.slider("Runtime (mins)", min_value=60, max_value=240, value=d_runtime)
+            vote_average = st.slider("Expected Rating (1-10)", min_value=1.0, max_value=10.0, value=float(d_rating), step=0.1)
+        with c6:
+            popularity = st.slider("Popularity Score", min_value=0.0, max_value=100.0, value=float(d_pop), step=0.5)
+            vote_count = st.slider("Expected Vote Count", min_value=0, max_value=50000, value=d_votes, step=100)
 
     st.markdown("<br>", unsafe_allow_html=True)
     predict_btn = st.button("PREDICT")
