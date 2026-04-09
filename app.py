@@ -21,8 +21,8 @@ with st.sidebar:
     st.page_link("app.py", label="🎬  PREDICT")
     st.page_link("pages/Director_Intel.py", label="🎭  DIRECTOR INTEL")
     st.page_link("pages/Actor_Intel.py", label="⭐  ACTOR INTEL")
-    # st.page_link("pages/Star_Power.py", label="💪  STAR POWER")
-    # st.page_link("pages/Dir_vs_Dir.py", label="🆚  DIR VS DIR")
+    st.page_link("pages/Star_Power.py", label="💪  STAR POWER")
+    st.page_link("pages/Dir_vs_Dir.py", label="🆚  DIR VS DIR")
 
 
 st.markdown("""
