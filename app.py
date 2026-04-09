@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 load_dotenv()
-TMDB_KEY = os.getenv("TMDB_API_KEY")
+TMDB_KEY = st.secrets.get("TMDB_API_KEY") or os.getenv("TMDB_API_KEY")
 
 st.set_page_config(
     page_title="ReelRejects",
