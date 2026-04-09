@@ -16,6 +16,7 @@ with st.sidebar:
     st.page_link("pages/Actor_Intel.py", label="⭐  ACTOR INTEL")
     st.page_link("pages/Star_Power.py", label="💪  STAR POWER")
     st.page_link("pages/Dir_vs_Dir.py", label="🆚  DIR VS DIR")
+    st.page_link("pages/Actor_vs_Actor.py", label="🥊  ACTOR VS ACTOR")
 
 st.markdown("""
 <style>

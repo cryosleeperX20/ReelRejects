@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TMDB_KEY = os.getenv("TMDB_API_KEY")
 
-st.set_page_config(page_title="Dir vs Dir", page_icon="🆚", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Actor vs Actor", page_icon="🎭", layout="wide", initial_sidebar_state="expanded")
 
 with st.sidebar:
     st.markdown("<div style='height:1px; background:linear-gradient(to right, transparent, #A01830, transparent); margin-bottom:1.5rem; margin-top:1rem'></div>", unsafe_allow_html=True)
@@ -54,19 +54,19 @@ def tmdb_get(endpoint, params={}):
     return r.json() if r.ok else {}
 
 @st.cache_data(ttl=3600)
-def search_director(name):
+def search_actor(name):
     data = tmdb_get("search/person", {"query": name})
     results = data.get("results", [])
     for r in results:
-        if r.get("known_for_department") == "Directing":
+        if r.get("known_for_department") == "Acting":
             return r
     return results[0] if results else None
 
 @st.cache_data(ttl=3600)
-def get_director_movies(person_id):
+def get_actor_movies(person_id):
     data = tmdb_get(f"person/{person_id}/movie_credits")
-    crew = data.get("crew", [])
-    movies = [m for m in crew if m.get("job") == "Director" and m.get("vote_count", 0) > 100]
+    cast = data.get("cast", [])
+    movies = [m for m in cast if m.get("vote_count", 0) > 200 and m.get("vote_average", 0) > 0]
     return sorted(movies, key=lambda x: x.get("vote_count", 0), reverse=True)[:30]
 
 def get_stats(movies):
@@ -79,47 +79,55 @@ def get_stats(movies):
     worst = min(movies, key=lambda x: x.get("vote_average", 0))
     return hit_rate, len(hits), len(movies), avg_rating, best, worst
 
+def get_badge(hit_rate):
+    if hit_rate >= 75:
+        return "💎 A-LIST", "#00ff00"
+    elif hit_rate >= 60:
+        return "✅ RELIABLE", "#88ff88"
+    elif hit_rate >= 45:
+        return "⚠️ HIT OR MISS", "#ffaa00"
+    else:
+        return "☠️ BOX OFFICE POISON", "#A01830"
+
 # header
-st.markdown("<div class='hero-title'>🆚 DIR<span class='red-accent'> VS </span>DIR</div>", unsafe_allow_html=True)
-st.markdown("<div style='color:#888; font-size:0.9rem; letter-spacing:3px; text-transform:uppercase; margin-top:0.5rem'>Head to head director showdown — who wins at the box office?</div>", unsafe_allow_html=True)
+st.markdown("<div class='hero-title'>🥊 ACTOR<span class='red-accent'> VS </span>ACTOR</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#888; font-size:0.9rem; letter-spacing:3px; text-transform:uppercase; margin-top:0.5rem'>Head to head actor showdown — whose movies perform better?</div>", unsafe_allow_html=True)
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
-# two inputs side by side
 left_input, vs_col, right_input = st.columns([2, 0.5, 2])
 with left_input:
-    st.markdown("<div class='section-title'>— Director 1</div>", unsafe_allow_html=True)
-    dir1_name = st.text_input("Director 1", placeholder="e.g. Christopher Nolan", label_visibility="collapsed")
+    st.markdown("<div class='section-title'>— Actor 1</div>", unsafe_allow_html=True)
+    actor1_name = st.text_input("Actor 1", placeholder="e.g. Tom Hanks", label_visibility="collapsed")
 with vs_col:
     st.markdown("<div style='font-family:Bebas Neue; font-size:3rem; color:#A01830; text-align:center; padding-top:1rem'>VS</div>", unsafe_allow_html=True)
 with right_input:
-    st.markdown("<div class='section-title'>— Director 2</div>", unsafe_allow_html=True)
-    dir2_name = st.text_input("Director 2", placeholder="e.g. James Cameron", label_visibility="collapsed")
+    st.markdown("<div class='section-title'>— Actor 2</div>", unsafe_allow_html=True)
+    actor2_name = st.text_input("Actor 2", placeholder="e.g. Leonardo DiCaprio", label_visibility="collapsed")
 
 st.markdown("<br>", unsafe_allow_html=True)
 compare_btn = st.button("COMPARE")
 
-if compare_btn and dir1_name and dir2_name:
+if compare_btn and actor1_name and actor2_name:
     with st.spinner("Loading records..."):
-        p1 = search_director(dir1_name)
-        p2 = search_director(dir2_name)
+        p1 = search_actor(actor1_name)
+        p2 = search_actor(actor2_name)
 
     if not p1 or not p2:
-        st.markdown("<div style='color:#A01830'>Could not find one or both directors.</div>", unsafe_allow_html=True)
+        st.markdown("<div style='color:#A01830'>Could not find one or both actors.</div>", unsafe_allow_html=True)
     else:
-        m1 = get_director_movies(p1["id"])
-        m2 = get_director_movies(p2["id"])
+        m1 = get_actor_movies(p1["id"])
+        m2 = get_actor_movies(p2["id"])
 
         hr1, hits1, total1, avg1, best1, worst1 = get_stats(m1)
         hr2, hits2, total2, avg2, best2, worst2 = get_stats(m2)
 
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
-        # winner banner
         if hr1 > hr2:
-            winner = p1.get("name", dir1_name)
+            winner = p1.get("name", actor1_name)
             win_color = "#00ff00"
         elif hr2 > hr1:
-            winner = p2.get("name", dir2_name)
+            winner = p2.get("name", actor2_name)
             win_color = "#00ff00"
         else:
             winner = "IT'S A TIE"
@@ -134,22 +142,23 @@ if compare_btn and dir1_name and dir2_name:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # side by side stats
         col1, divider_col, col2 = st.columns([2, 0.1, 2])
 
-        def render_director_card(person, movies, hit_rate, hits, total, avg_rating, best, worst):
+        def render_actor_card(person, movies, hit_rate, hits, total, avg_rating, best, worst):
             profile = person.get("profile_path")
+            badge, badge_color = get_badge(hit_rate)
             pc1, pc2 = st.columns([1, 2])
             with pc1:
                 if profile:
                     st.image(f"https://image.tmdb.org/t/p/w200{profile}", use_container_width=True)
                 else:
-                    st.markdown("<div style='background:#1a1a1a; height:120px; display:flex; align-items:center; justify-content:center; color:#444; font-size:2rem'>🎬</div>", unsafe_allow_html=True)
+                    st.markdown("<div style='background:#1a1a1a; height:120px; display:flex; align-items:center; justify-content:center; color:#444; font-size:2rem'>🎭</div>", unsafe_allow_html=True)
             with pc2:
                 st.markdown(f"<div style='font-family:Bebas Neue; font-size:1.5rem; color:#fff'>{person.get('name','')}</div>", unsafe_allow_html=True)
                 color = "#00ff00" if hit_rate >= 60 else "#A01830"
                 st.markdown(f"<div style='font-family:Bebas Neue; font-size:2.5rem; color:{color}'>{hit_rate}%</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='font-size:0.7rem; color:#666'>HIT RATE</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:0.8rem; color:{badge_color}; margin-top:0.3rem'>{badge}</div>", unsafe_allow_html=True)
 
             s1, s2, s3 = st.columns(3)
             with s1:
@@ -159,7 +168,6 @@ if compare_btn and dir1_name and dir2_name:
             with s3:
                 st.markdown(f"<div class='stat-card'><div class='stat-number'>{avg_rating}</div><div class='stat-label'>Avg Rating</div></div>", unsafe_allow_html=True)
 
-            # hit rate bar
             bar_color = "#00ff00" if hit_rate >= 60 else "#A01830"
             st.markdown(f"""
             <div class='prob-bar-container' style='height:10px'>
@@ -177,7 +185,6 @@ if compare_btn and dir1_name and dir2_name:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # filmography strip -- top 6
             st.markdown("<div style='font-size:0.65rem; color:#444; letter-spacing:2px; margin-top:1rem; margin-bottom:0.5rem'>TOP FILMS</div>", unsafe_allow_html=True)
             film_cols = st.columns(6)
             for i, movie in enumerate(movies[:6]):
@@ -190,13 +197,13 @@ if compare_btn and dir1_name and dir2_name:
                     st.markdown(f"<div style='font-size:0.6rem; color:{c}; text-align:center'>⭐{r}</div>", unsafe_allow_html=True)
 
         with col1:
-            render_director_card(p1, m1, hr1, hits1, total1, avg1, best1, worst1)
+            render_actor_card(p1, m1, hr1, hits1, total1, avg1, best1, worst1)
 
         with divider_col:
             st.markdown("<div style='width:1px; background:#1a1a1a; height:100%'></div>", unsafe_allow_html=True)
 
         with col2:
-            render_director_card(p2, m2, hr2, hits2, total2, avg2, best2, worst2)
+            render_actor_card(p2, m2, hr2, hits2, total2, avg2, best2, worst2)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
