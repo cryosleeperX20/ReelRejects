@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import os
 
-TMDB_KEY = st.secrets.get("TMDB_API_KEY") or os.getenv("TMDB_API_KEY")
+TMDB_API_KEY = st.secrets.get("TMDB_API_KEY")
 
 st.set_page_config(
     page_title="ReelRejects",
