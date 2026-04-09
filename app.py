@@ -12,8 +12,18 @@ st.set_page_config(
     page_title="ReelRejects",
     page_icon="🎟️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
+with st.sidebar:
+    st.markdown("<div style='height:1px; background:linear-gradient(to right, transparent, #A01830, transparent); margin-bottom:1.5rem; margin-top:1rem'></div>", unsafe_allow_html=True)
+    # nav links
+    st.markdown("<div style='font-size:0.6rem; color:#333; letter-spacing:2px; margin-bottom:0.8rem; padding-left:1rem'>NAVIGATION</div>", unsafe_allow_html=True)
+    st.page_link("app.py", label="🎬  PREDICT")
+    st.page_link("pages/Director_Intel.py", label="🎭  DIRECTOR INTEL")
+    st.page_link("pages/Actor_Intel.py", label="⭐  ACTOR INTEL")
+    # st.page_link("pages/Star_Power.py", label="💪  STAR POWER")
+    # st.page_link("pages/Dir_vs_Dir.py", label="🆚  DIR VS DIR")
+
 
 st.markdown("""
 <style>
@@ -204,8 +214,52 @@ st.markdown("""
     #MainMenu { visibility: hidden; }
     header { visibility: hidden; }
     
-    section[data-testid="stSidebar"] { display: none !important; }
+    section[data-testid="stSidebar"] {
+    background-color: #0a0a0a !important;
+    border-right: 1px solid #1f1f1f !important;
+    min-width: 220px !important;
+}
+
+[data-testid="stSidebarNav"] { display: none !important; }
 [data-testid="collapsedControl"] { display: none !important; }
+
+section[data-testid="stSidebar"] {
+    background-color: #0a0a0a !important;
+    border-right: 2px solid #1a1a1a !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    padding: 2rem 1.2rem !important;
+}
+
+[data-testid="stPageLink"] {
+    margin-bottom: 0.2rem !important;
+}
+
+[data-testid="stPageLink"] a {
+    font-family: 'Bebas Neue', cursive !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 3px !important;
+    color: #444444 !important;
+    text-decoration: none !important;
+    padding: 0.7rem 1rem !important;
+    display: block !important;
+    border-radius: 3px !important;
+    border-left: 3px solid transparent !important;
+    transition: all 0.15s !important;
+}
+
+[data-testid="stPageLink"] a:hover {
+    color: #ffffff !important;
+    background: #111111 !important;
+    border-left: 3px solid #A01830 !important;
+}
+
+[data-testid="stPageLink-active"] a {
+    color: #ffffff !important;
+    background: #150508 !important;
+    border-left: 3px solid #A01830 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -394,59 +448,7 @@ with col_title:
     st.markdown("<div class='hero-sub'>Movie Hit or Flop Predictor — ML Powered</div>", unsafe_allow_html=True)
 
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
-
-# nav cards -- quick access to other pages
-st.markdown("<div class='section-title'>— Explore</div>", unsafe_allow_html=True)
-n1, n2, n3, n4 = st.columns(4)
-with n1:
-    st.markdown("""
-    <a href='/Director_Intel' target='_self' style='text-decoration:none'>
-        <div style='background:#111;border:1px solid #1f1f1f;border-left:3px solid #A01830;
-        padding:1.2rem;border-radius:4px;cursor:pointer;transition:all 0.2s'>
-            <div style='font-size:1.8rem'>🎬</div>
-            <div style='font-family:Bebas Neue;font-size:1.1rem;letter-spacing:2px;margin-top:0.3rem'>Director Intel</div>
-            <div style='font-size:0.7rem;color:#666;margin-top:0.2rem'>Career stats & hit rate</div>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-with n2:
-    st.markdown("""
-    <a href='/Actor_Intel' target='_self' style='text-decoration:none'>
-        <div style='background:#111;border:1px solid #1f1f1f;border-left:3px solid #A01830;
-        padding:1.2rem;border-radius:4px;cursor:pointer'>
-            <div style='font-size:1.8rem'>🎭</div>
-            <div style='font-family:Bebas Neue;font-size:1.1rem;letter-spacing:2px;margin-top:0.3rem'>Actor Intel</div>
-            <div style='font-size:0.7rem;color:#666;margin-top:0.2rem'>Box office poison or gold?</div>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-with n3:
-    st.markdown("""
-    <a href='/Star_Power' target='_self' style='text-decoration:none'>
-        <div style='background:#111;border:1px solid #1f1f1f;border-left:3px solid #A01830;
-        padding:1.2rem;border-radius:4px;cursor:pointer'>
-            <div style='font-size:1.8rem'>⭐</div>
-            <div style='font-family:Bebas Neue;font-size:1.1rem;letter-spacing:2px;margin-top:0.3rem'>Star Power</div>
-            <div style='font-size:0.7rem;color:#666;margin-top:0.2rem'>Build your cast score</div>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-with n4:
-    st.markdown("""
-    <a href='/Dir_vs_Dir' target='_self' style='text-decoration:none'>
-        <div style='background:#111;border:1px solid #1f1f1f;border-left:3px solid #A01830;
-        padding:1.2rem;border-radius:4px;cursor:pointer'>
-            <div style='font-size:1.8rem'>🆚</div>
-            <div style='font-family:Bebas Neue;font-size:1.1rem;letter-spacing:2px;margin-top:0.3rem'>Dir vs Dir</div>
-            <div style='font-size:0.7rem;color:#666;margin-top:0.2rem'>Head to head showdown</div>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-
 st.markdown("<br>", unsafe_allow_html=True)
-
-# Top stats
-
 # Top stats
 s1, s2, s3, s4 = st.columns(4)
 with s1:
@@ -672,3 +674,4 @@ else:
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center;color:#333;font-size:0.7rem;letter-spacing:2px'>REELREJECTS — ML POWERED MOVIE PREDICTION</div>", unsafe_allow_html=True)
+

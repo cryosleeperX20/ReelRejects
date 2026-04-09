@@ -6,7 +6,13 @@ from dotenv import load_dotenv
 load_dotenv()
 TMDB_KEY = os.getenv("TMDB_API_KEY")
 
-st.set_page_config(page_title="Director Intel", page_icon="🎬", layout="wide")
+st.set_page_config(page_title="Director Intel", page_icon="🎬", layout="wide", initial_sidebar_state="expanded")
+with st.sidebar:
+    st.markdown("<div style='height:1px; background:linear-gradient(to right, transparent, #A01830, transparent); margin-bottom:1.5rem; margin-top:1rem'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.6rem; color:#333; letter-spacing:2px; margin-bottom:0.8rem; padding-left:1rem'>NAVIGATION</div>", unsafe_allow_html=True)
+    st.page_link("app.py", label="🎬  PREDICT")
+    st.page_link("pages/Director_Intel.py", label="🎭  DIRECTOR INTEL")
+    st.page_link("pages/Actor_Intel.py", label="⭐  ACTOR INTEL")
 
 st.markdown("""
 <style>
@@ -30,8 +36,44 @@ st.markdown("""
     footer { display: none; }
     #MainMenu { visibility: hidden; }
     header { visibility: hidden; }
-    section[data-testid="stSidebar"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
+   section[data-testid="stSidebar"] {
+    background-color: #0a0a0a !important;
+    border-right: 1px solid #1f1f1f !important;
+    min-width: 220px !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    padding: 2rem 1rem !important;
+}
+
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+[data-testid="stPageLink"] a {
+    font-family: 'Bebas Neue', cursive !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 2px !important;
+    color: #666666 !important;
+    text-decoration: none !important;
+    padding: 0.6rem 0.8rem !important;
+    display: block !important;
+    border-radius: 4px !important;
+    margin-bottom: 0.3rem !important;
+}
+
+[data-testid="stPageLink"] a:hover {
+    color: #ffffff !important;
+    background: #1a1a1a !important;
+}
+
+[data-testid="stPageLink-active"] a {
+    color: #ffffff !important;
+    background: #A01830 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
