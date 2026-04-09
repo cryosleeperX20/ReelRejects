@@ -413,37 +413,53 @@ with left_col:
 
     c1, c2 = st.columns(2)
     with c1:
-        budget = st.number_input("Budget ($)", min_value=10_000, max_value=500_000_000,
-                                 value=50_000_000, step=1_000_000)
+        genre = st.selectbox("Primary Genre", options=sorted(list(le.classes_)))
     with c2:
-        revenue_estimate = st.number_input("Expected Revenue ($)", min_value=0,
-                                           max_value=2_000_000_000, value=0, step=1_000_000)
+        budget_millions = st.number_input("Budget ($M)", min_value=0.1, max_value=500.0,
+                                  value=50.0, step=0.5)
+    
+    budget = budget_millions * 1_000_000
 
     c3, c4 = st.columns(2)
     with c3:
-        genre = st.selectbox("Primary Genre", options=sorted(list(le.classes_)))
-    with c4:
-        runtime = st.slider("Runtime (mins)", min_value=60, max_value=240, value=110)
-
-    c5, c6 = st.columns(2)
-    with c5:
         release_month = st.selectbox("Release Month",
                                      options=list(month_names.keys()),
                                      format_func=lambda x: month_names[x],
                                      index=5)
-    with c6:
+    with c4:
         release_year = st.slider("Release Year", min_value=2020, max_value=2030, value=2025)
 
-    c7, c8 = st.columns(2)
-    with c7:
-        vote_average = st.slider("Expected Rating (1-10)", min_value=1.0,
-                                 max_value=10.0, value=6.5, step=0.1)
-    with c8:
-        popularity = st.slider("Popularity Score", min_value=0.0,
-                               max_value=100.0, value=20.0, step=0.5)
+    # genre-based smart defaults -- avg values from training data
+    genre_defaults = {
+        'Action': (120, 25.0, 6.2, 3000),
+        'Adventure': (115, 22.0, 6.4, 2800),
+        'Animation': (95, 18.0, 6.8, 2000),
+        'Comedy': (100, 15.0, 6.1, 2500),
+        'Crime': (118, 14.0, 6.5, 2200),
+        'Documentary': (90, 8.0, 7.0, 800),
+        'Drama': (110, 12.0, 6.6, 2000),
+        'Family': (100, 20.0, 6.3, 1800),
+        'Fantasy': (118, 24.0, 6.5, 2600),
+        'History': (130, 10.0, 6.7, 1200),
+        'Horror': (95, 18.0, 5.8, 3500),
+        'Music': (105, 12.0, 6.9, 1000),
+        'Mystery': (105, 13.0, 6.4, 1800),
+        'Romance': (105, 11.0, 6.3, 1500),
+        'Science Fiction': (115, 28.0, 6.3, 2800),
+        'Thriller': (110, 16.0, 6.2, 2400),
+        'War': (130, 12.0, 6.8, 1400),
+        'Western': (115, 9.0, 6.5, 1000),
+    }
 
-    vote_count = st.slider("Expected Vote Count", min_value=0,
-                           max_value=50_000, value=1000, step=100)
+    d_runtime, d_pop, d_rating, d_votes = genre_defaults.get(genre, (110, 15.0, 6.5, 2000))
+
+    c5, c6 = st.columns(2)
+    with c5:
+        runtime = st.slider("Runtime (mins)", min_value=60, max_value=240, value=d_runtime)
+        vote_average = st.slider("Expected Rating (1-10)", min_value=1.0, max_value=10.0, value=float(d_rating), step=0.1)
+    with c6:
+        popularity = st.slider("Popularity Score", min_value=0.0, max_value=100.0, value=float(d_pop), step=0.5)
+        vote_count = st.slider("Expected Vote Count", min_value=0, max_value=50000, value=d_votes, step=100)
 
     st.markdown("<br>", unsafe_allow_html=True)
     predict_btn = st.button("PREDICT")
@@ -559,12 +575,30 @@ if predict_btn:
         """, unsafe_allow_html=True)
 
         st.markdown(f"""
-        <div class='insight-row'><span class='insight-label'>Confidence</span><span class='insight-value'>{confidence}%</span></div>
-        <div class='insight-row'><span class='insight-label'>Genre avg hit rate</span><span class='insight-value'>{selected_hit_rate}%</span></div>
-        <div class='insight-row'><span class='insight-label'>Month avg hit rate</span><span class='insight-value'>{month_rate}%</span></div>
-        <div class='insight-row'><span class='insight-label'>Budget</span><span class='insight-value'>${budget:,.0f}</span></div>
-        <div class='insight-row'><span class='insight-label'>Runtime</span><span class='insight-value'>{runtime} mins</span></div>
-        <div class='insight-row'><span class='insight-label'>Release</span><span class='insight-value'>{month_names[release_month]} {release_year}</span></div>
+        <div class='insight-row'>
+            <span class='insight-label'>Confidence</span>
+            <span class='insight-value'>{confidence}%</span>
+        </div>
+        <div class='insight-row'>
+            <span class='insight-label'>Genre avg hit rate</span>
+            <span class='insight-value'>{selected_hit_rate}%</span>
+        </div>
+        <div class='insight-row'>
+            <span class='insight-label'>Month avg hit rate</span>
+            <span class='insight-value'>{month_rate}%</span>
+        </div>
+        <div class='insight-row'>
+            <span class='insight-label'>Budget</span>
+            <span class='insight-value'>${budget_millions:.1f}M</span>
+        </div>
+        <div class='insight-row'>
+            <span class='insight-label'>Runtime</span>
+            <span class='insight-value'>{runtime} mins</span>
+        </div>
+        <div class='insight-row'>
+            <span class='insight-label'>Release</span>
+            <span class='insight-value'>{month_names[release_month]} {release_year}</span>
+        </div>
         """, unsafe_allow_html=True)
 
 
