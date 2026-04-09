@@ -6,6 +6,8 @@ import numpy as np
 import os
 
 TMDB_KEY = st.secrets["TMDB_API_KEY"]
+st.write("KEY:", TMDB_KEY[:5])
+
 st.set_page_config(
     page_title="ReelRejects",
     page_icon="🎟️",
