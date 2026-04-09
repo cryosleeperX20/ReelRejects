@@ -441,12 +441,14 @@ def render_movie_grid(movies):
 # ════════════════════════════════════════════════════════════════════════════
 
 # Header
-col_logo, col_title = st.columns([1, 5])
-with col_logo:
-    st.markdown("<div style='padding-top:0.5rem;font-size:3rem'>🎟️</div>", unsafe_allow_html=True)
-with col_title:
-    st.markdown("<div class='hero-title'>REEL<span class='red-accent'>REJECTS</span></div>", unsafe_allow_html=True)
-    st.markdown("<div class='hero-sub'>Movie Hit or Flop Predictor — ML Powered</div>", unsafe_allow_html=True)
+st.markdown("""
+<div style='display:flex;align-items:center;justify-content:center;padding:1rem 0'>
+    <div class='hero-title'>REEL<span class='red-accent'>REJECTS</span></div>
+</div>
+<div style='text-align:center'>
+    <div class='hero-sub'>Movie Hit or Flop Predictor — ML Powered</div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
