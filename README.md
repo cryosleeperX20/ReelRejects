@@ -14,7 +14,7 @@
 **Will your movie make money — or lose it all?**  
 ReelRejects uses machine learning trained on 12,000+ real movies to predict box office success before a film releases.
 
-[🚀 **Live Demo**](https://reelrejects.streamlit.app) · [📊 **Notebooks**](notebooks/) · [🐛 **Issues**](issues/)
+[🚀 **Live Demo**](https://reelrejects.streamlit.app) · [📊 **Notebooks**](notebooks/) 
 
 </div>
 
